@@ -1,0 +1,102 @@
+@import "tom-select/dist/css/tom-select.css";
+@import "tailwindcss";
+
+/* @layer components { */
+/* Style untuk select type (bisa sama style nya untuk elemen select lain dengan cara meletakan class select-search di elemen pembungkus div) */
+.select-search {
+    .input-active .ts-control {
+        @apply dark:!bg-gray-900 bg-white ring ring-gray-500/50;
+    }
+
+    .ts-control input::placeholder {
+        @apply dark:text-white/70 text-black/70;
+    }
+
+    .ts-control input {
+        @apply text-black dark:text-white;
+    }
+
+    .ts-control {
+        @apply dark:text-white transition-all py-[9px] px-3 border-gray-300 dark:border-gray-700 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm duration-300 ease-in-out text-black bg-white w-full dark:bg-gray-800 rounded-md mt-1 cursor-pointer;
+    }
+
+    .ts-dropdown {
+        @apply z-10 bg-transparent border-transparent overflow-hidden;
+    }
+    .ts-dropdown-content {
+        @apply bg-white border-gray-300 dark:border-gray-700 border-[1px] dark:bg-gray-800 rounded-md animate-[dropdown_0.4s_ease_forwards];
+    }
+
+    .ts-dropdown.single.slideup .ts-dropdown-content {
+        @apply animate-[dropclose_0.4s_ease-in-out_forwards];
+    }
+
+    .option {
+        @apply dark:hover:bg-gray-500 hover:bg-gray-400 p-2 text-black dark:text-white transition-all duration-100 ease-in-out;
+    }
+    .option.active {
+        @apply dark:bg-gray-500 dark:text-gray-900 bg-gray-400 text-gray-100;
+    }
+
+    .no-results {
+        @apply dark:text-white;
+    }
+}
+
+/* jika ingin style nya berbeda tinggal tulis class secara terpisah, diataskan class nya .select-search buat pisah seeperti contoh dibawah */
+/* contoh
+
+ .select-search2 {
+
+  style untuk body select dengan class ini, ubah style dengan ubah isi @apply nya contoh jadi: bg-red-800 misal
+ .ts-control {
+        @apply bg-red-800;
+    }
+
+}   
+
+*/
+
+/* animasi untuk slide kebawah dropdown */
+@keyframes dropdown {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* animasi untuk slide keatas dropclose */
+@keyframes dropclose {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-100%);
+    }
+}
+/* } */
+
+/* scrollbar */
+html::-webkit-scrollbar {
+    @apply size-[3px] md:size-[4px] xl:size-[5px] 2xl:size-[6px] dark:bg-gray-800 bg-white;
+}
+html::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    @apply bg-indigo-400 dark:bg-indigo-600 rounded-full;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+    @apply size-[3px] md:size-[4px] xl:size-[5px] 2xl:size-[6px];
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+    @apply size-[3px] md:size-[4px] xl:size-[5px] 2xl:size-[6px];
+}
+
+.overflow-y-auto,
+.overflow-x-auto {
+    scrollbar-gutter: stable;
+}

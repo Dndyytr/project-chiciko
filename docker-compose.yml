@@ -1,0 +1,88 @@
+# docker-compose.yml
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: project_chiciko
+        volumes:
+            - ./:/var/www/html
+            - project_storage:/var/www/html/storage
+            - ./.env.docker:/var/www/html/.env
+        networks:
+            - appnet
+        depends_on:
+            - redis
+            - mysql
+        restart: unless-stopped
+        environment:
+            APP_ENV: docker
+            APP_DEBUG: true
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_DATABASE: project_chiciko
+            DB_USERNAME: root
+            DB_PASSWORD: ""
+            CACHE_DRIVER: redis
+            SESSION_DRIVER: redis
+            CACHE_CONNECTION: cache
+            SESSION_CONNECTION: session
+
+    nginx:
+        image: nginx:stable
+        container_name: chiciko_nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www/html
+            - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+        networks:
+            - appnet
+        depends_on:
+            - app
+
+    redis:
+        image: redis:7
+        container_name: chiciko_redis
+        volumes:
+            - redis_data:/data
+        networks:
+            - appnet
+
+    mysql:
+        image: mysql:8.0
+        container_name: chiciko_mysql
+        environment:
+            MYSQL_DATABASE: project_chiciko
+            MYSQL_ROOT_PASSWORD: ""
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - mysql_data:/var/lib/mysql
+        ports:
+            - "3307:3306"
+        networks:
+            - appnet
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: chiciko_phpmyadmin
+        ports:
+            - "8081:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: root
+            PMA_PASSWORD: ""
+        depends_on:
+            - mysql
+        networks:
+            - appnet
+
+networks:
+    appnet:
+        driver: bridge
+
+volumes:
+    mysql_data:
+    redis_data:
+    project_storage:
