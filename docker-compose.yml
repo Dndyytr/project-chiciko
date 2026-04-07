@@ -19,7 +19,7 @@ services:
         environment:
             APP_ENV: docker
             APP_DEBUG: ${APP_DEBUG}
-            DB_HOST: mysql
+            DB_HOST: ${DB_HOST}
             DB_PORT: ${DB_PORT}
             DB_DATABASE: ${DB_DATABASE}
             DB_USERNAME: ${DB_USERNAME}
@@ -72,8 +72,6 @@ services:
             - ${PHPMYADMIN_PORT}
         environment:
             PMA_HOST: mysql
-            PMA_USER: ${DB_USERNAME}
-            PMA_PASSWORD: ${DB_PASSWORD}
         depends_on:
             - mysql
         networks:
