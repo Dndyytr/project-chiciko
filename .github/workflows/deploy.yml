@@ -1,0 +1,39 @@
+name: Deploy Laravel to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync project to VPS
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='storage' \
+            --exclude='vendor' \
+            -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.VPS_PORT }}" \
+            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/srv/project-chiciko/
+
+      - name: Run deploy script on VPS
+        run: |
+          ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" \
+          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+          'bash /srv/project-chiciko/deploy.sh'
