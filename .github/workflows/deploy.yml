@@ -4,16 +4,15 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Ambil source code
       - name: Checkout source
         uses: actions/checkout@v4
-
       # 2. Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,7 +26,6 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      # 4. Setup SSH
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -35,21 +33,75 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      # 5. Kirim file ke VPS
       - name: Sync project to VPS
         run: |
           rsync -az --delete \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='.env' \
-            --exclude='node_modules' \
+            --exclude='storage' \
             --exclude='vendor' \
             -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.VPS_PORT }}" \
             ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/srv/project-chiciko/
 
-      # 6. Jalankan deploy di VPS
-      - name: Run deploy script
+      - name: Run deploy script on VPS
         run: |
           ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" \
           ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
           'bash /srv/project-chiciko/deploy.sh'
+
+# name: Deploy Laravel to VPS
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # 1. Ambil source code
+#       - name: Checkout source
+#         uses: actions/checkout@v4
+
+#       # 2. Setup Node.js
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+
+#       # 3. Install & build frontend (Vite)
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Build assets
+#         run: npm run build
+
+#       # 4. Setup SSH
+#       - name: Setup SSH
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+#           chmod 600 ~/.ssh/id_rsa
+#           ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+#       # 5. Kirim file ke VPS
+#       - name: Sync project to VPS
+#         run: |
+#           rsync -az --delete \
+#             --exclude='.git' \
+#             --exclude='.github' \
+#             --exclude='.env' \
+#             --exclude='node_modules' \
+#             --exclude='vendor' \
+#             -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.VPS_PORT }}" \
+#             ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/srv/project-chiciko/
+
+#       # 6. Jalankan deploy di VPS
+#       - name: Run deploy script
+#         run: |
+#           ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" \
+#           ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+#           'bash /srv/project-chiciko/deploy.sh'
