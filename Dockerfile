@@ -48,7 +48,7 @@ WORKDIR /var/www/html
 
 # Install additional tools early (for cache efficiency)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git unzip curl \
+    git unzip curl nodejs npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
