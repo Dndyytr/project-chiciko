@@ -46,8 +46,16 @@ FROM base AS app
 
 WORKDIR /var/www/html
 
+# Install additional tools early (for cache efficiency)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git unzip curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Copy project files
 COPY --from=builder /app /var/www/html
+
+# Composer binary (dari builder, bukan dari composer:2)
+COPY --from=builder /usr/bin/composer /usr/bin/composer
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html \
