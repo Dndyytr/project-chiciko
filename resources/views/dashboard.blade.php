@@ -9,7 +9,7 @@
         <div class="mx-auto">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100 flex justify-between">
-                    {{ __("You're logged in!") }} hai deploy
+                    {{ __("You're logged in!") }} hai deploy fix
 
                     <a href="/export-all"
                         class="relative inline-flex items-center px-4 py-2 font-medium
